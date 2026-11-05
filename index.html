@@ -13,163 +13,230 @@
 <meta property="og:description" content="Crea y descarga cuadrículas PNG con fondo transparente. Gratis, sin registro y de código abierto.">
 <meta property="og:url" content="https://juaincha.github.io/generador-cuadricula-png/">
 <meta name="twitter:card" content="summary">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 1h14v14H1zM5.7 1v14M10.3 1v14M1 5.7h14M1 10.3h14' fill='none' stroke='%233f6593' stroke-width='1.4'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#f6f1e7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f5c46'/%3E%3Cpath d='M8 8h16v16H8zM13.3 8v16M18.7 8v16M8 13.3h16M8 18.7h16' fill='none' stroke='%23f6f1e7' stroke-width='1.6'/%3E%3C/svg%3E">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Generador de cuadrícula PNG","url":"https://juaincha.github.io/generador-cuadricula-png/","applicationCategory":"DesignApplication","operatingSystem":"Cualquiera (navegador web)","inLanguage":"es","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <style>
-/* Layout: preview canvas on top with an action bar, then four option columns that stack on phones */
 :root{
-  --bg:#f4f6f9; --panel:#ffffff; --fg:#1d2733; --muted:#5d6b7c; --line:#cfd7e2;
-  --accent:#3f6593; --accent-ink:#ffffff; --accent-hover:#345580;
-  --check-a:#ffffff; --check-b:#e6eaf0; --ok:#2f7d4f; --err:#b3392f;
+  --bg:#f6f1e7; --card:#fffdf8; --ink:#1d2b25; --soft:#5f6b63; --rule:#e2d9c6; --field:#fbf8f1;
+  --brand:#1f5c46; --brand-ink:#f6f1e7; --brand-hover:#174a38; --brand-tint:#e3eee7;
+  --chk-a:#fffdf8; --chk-b:#ece5d6; --ok:#1f7a4d; --err:#b23a2b;
   --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --r:14px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#12171e; --panel:#1a212b; --fg:#e3e9f0; --muted:#9aa8b8; --line:#2e3946;
-  --accent:#5b86b8; --accent-ink:#0d1219; --accent-hover:#7099c8;
-  --check-a:#2a323d; --check-b:#222932; --ok:#5fbf86; --err:#e5776d; color-scheme:dark}}
+  --bg:#141a17; --card:#1b2420; --ink:#e8efe9; --soft:#a1aea6; --rule:#2c3833; --field:#18201c;
+  --brand:#6fc29c; --brand-ink:#0f1713; --brand-hover:#8ad3b0; --brand-tint:#203a2f;
+  --chk-a:#232d29; --chk-b:#1c2521; --ok:#6fc29c; --err:#ef8a7c; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#12171e; --panel:#1a212b; --fg:#e3e9f0; --muted:#9aa8b8; --line:#2e3946;
-  --accent:#5b86b8; --accent-ink:#0d1219; --accent-hover:#7099c8;
-  --check-a:#2a323d; --check-b:#222932; --ok:#5fbf86; --err:#e5776d; color-scheme:dark}
+  --bg:#141a17; --card:#1b2420; --ink:#e8efe9; --soft:#a1aea6; --rule:#2c3833; --field:#18201c;
+  --brand:#6fc29c; --brand-ink:#0f1713; --brand-hover:#8ad3b0; --brand-tint:#203a2f;
+  --chk-a:#232d29; --chk-b:#1c2521; --ok:#6fc29c; --err:#ef8a7c; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45}
-.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px;
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1{font-size:20px;font-weight:600;color:var(--accent);margin:0 0 10px;letter-spacing:-.01em}
-h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
-.preview{border:1px solid var(--accent);border-radius:6px;overflow:hidden;background:var(--panel)}
-.stage{min-height:240px;max-height:560px;overflow:auto;display:flex;padding:16px;
-  background-color:var(--check-a);
-  background-image:linear-gradient(45deg,var(--check-b) 25%,transparent 25%,transparent 75%,var(--check-b) 75%),
-    linear-gradient(45deg,var(--check-b) 25%,transparent 25%,transparent 75%,var(--check-b) 75%);
-  background-size:20px 20px;background-position:0 0,10px 10px}
-.stage canvas{margin:auto;display:block;max-width:none}
-.bar{display:grid;grid-template-columns:repeat(3,1fr);background:var(--accent)}
-.bar button{background:none;border:0;color:var(--accent-ink);font:600 13px var(--sans);padding:13px 8px;cursor:pointer}
-.bar button+button{border-left:1px solid rgba(255,255,255,.18)}
-.bar button:hover{background:var(--accent-hover)}
-.bar button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:-4px}
-.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:12px var(--mono);color:var(--muted);padding:8px 2px 0}
-#status.ok{color:var(--ok)} #status.err{color:var(--err)}
-fieldset{margin:18px 0 0;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px 14px 16px}
-legend{padding:0 6px;font-size:13px;color:var(--fg)}
-.cols{display:grid;grid-template-columns:1.05fr 1fr 1.05fr 1fr;gap:24px}
-@media (max-width:860px){.cols{grid-template-columns:1fr 1fr}}
-@media (max-width:520px){.cols{grid-template-columns:1fr}}
-h2{font-size:15px;font-weight:500;margin:6px 0 12px}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.f{margin-bottom:10px;min-width:0}
-.f label,.hint{display:block;font-size:12px;color:var(--muted);margin-top:3px}
-input[type=number],input[type=text]{width:100%;font:14px var(--mono);color:var(--fg);background:var(--panel);
-  border:1px solid var(--line);border-radius:3px;padding:6px 8px}
-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+
+/* Cabecera */
+header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.mark{flex:none;width:44px;height:44px;border-radius:12px;background:var(--brand);display:grid;place-items:center}
+.mark svg{width:26px;height:26px}
+h1{margin:0;font-size:clamp(20px,4vw,26px);line-height:1.15;letter-spacing:-.02em}
+.tag{margin:2px 0 0;color:var(--soft);font-size:14px}
+
+/* Distribución: ajustes a la izquierda, vista previa a la derecha */
+.layout{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);grid-template-areas:"ctl view";gap:24px;align-items:start}
+.controls{grid-area:ctl;display:flex;flex-direction:column;gap:14px}
+.view{grid-area:view;position:sticky;top:16px}
+@media (max-width:840px){
+  .layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"view" "ctl"}
+  .view{position:static}
+}
+
+.card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:16px}
+.card h2{margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:8px}
+.card h2 b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand-tint);font-size:11px;letter-spacing:0}
+
+/* Tarjetas de forma */
+.shapes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.shape{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 8px;border:1.5px solid var(--rule);border-radius:10px;background:var(--field);cursor:pointer;font-size:12px;color:var(--soft);text-align:center}
+.shape input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.shape svg{width:26px;height:26px;color:var(--ink)}
+.shape:has(input:checked){border-color:var(--brand);background:var(--brand-tint);color:var(--ink);font-weight:600}
+.shape:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}
+.extra{margin-top:12px}
+.extra[hidden]{display:none}
+
+/* Campos */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.fld{min-width:0}
+.fld>label,.fld>.lbl{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.unit{position:relative}
+.unit input{padding-right:34px}
+.unit::after{content:attr(data-u);position:absolute;right:10px;top:50%;transform:translateY(-50%);font:12px var(--mono);color:var(--soft);pointer-events:none}
+input[type=number],input[type=text]{width:100%;font:14px var(--mono);color:var(--ink);background:var(--field);border:1.5px solid var(--rule);border-radius:8px;padding:8px 10px}
+input:focus-visible{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
 input.bad{border-color:var(--err)}
-.color{position:relative}
-.color input[type=text]{padding-right:34px}
-.sw{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:1px solid var(--line);
-  background-image:linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%),linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%);
-  background-color:#fff;background-size:8px 8px;background-position:0 0,4px 4px;overflow:hidden;cursor:pointer}
-.sw span{position:absolute;inset:0}
-.sw input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:0;padding:0}
-.radio{display:flex;align-items:center;gap:8px;margin:2px 0 8px;cursor:pointer}
-.radio input{accent-color:var(--accent);margin:0}
-.sub{margin:0 0 10px 0}
-.sub.off{opacity:.55}
+input:disabled{opacity:.5}
+
+/* Colores */
+.clr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--rule)}
+.clr:first-of-type{border-top:0;padding-top:0}
+.clr .name{grid-column:1/-1;font-size:13px;font-weight:600}
+.dot{position:relative;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--rule);overflow:hidden;cursor:pointer;
+  background:conic-gradient(var(--chk-b) 25%,var(--chk-a) 0 50%,var(--chk-b) 0 75%,var(--chk-a) 0) 0 0/10px 10px}
+.dot span{position:absolute;inset:0}
+.dot input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;padding:0;cursor:pointer}
+.dot.off{cursor:default}
+.see{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--soft);cursor:pointer;white-space:nowrap}
+.see input{accent-color:var(--brand);width:16px;height:16px;margin:0}
+
+/* Vista previa */
+.view .card{padding:0;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--rule);font-size:13px}
+.top strong{font-weight:600}
+#dims{font:12px var(--mono);color:var(--soft)}
+.stage{display:flex;overflow:auto;padding:20px;min-height:260px;max-height:min(68vh,640px);
+  background:conic-gradient(var(--chk-b) 25%,var(--chk-a) 0 50%,var(--chk-b) 0 75%,var(--chk-a) 0) 0 0/16px 16px}
+.stage canvas{margin:auto;display:block;max-width:none;box-shadow:0 0 0 1px var(--rule)}
+.acts{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;padding:12px}
+@media (max-width:520px){.acts{grid-template-columns:1fr 1fr}.acts .main{grid-column:1/-1}}
+button{font:600 14px var(--sans);border-radius:10px;padding:11px 12px;cursor:pointer;border:1.5px solid var(--rule);background:var(--field);color:var(--ink)}
+button:hover{border-color:var(--brand)}
+button.main{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.main:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+#status{min-height:1.5em;padding:0 14px 12px;font-size:13px;color:var(--soft)}
+#status.ok{color:var(--ok)} #status.err{color:var(--err)}
+
+/* Guía y preguntas */
+.info{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;margin-top:40px}
+@media (max-width:840px){.info{grid-template-columns:minmax(0,1fr)}}
+.info h2{font-size:19px;margin:0 0 12px;letter-spacing:-.01em}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 14px 40px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:13px;font-weight:700}
+details{background:var(--card);border:1px solid var(--rule);border-radius:12px;margin-bottom:8px}
+summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--brand);font-size:18px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:0;padding:0 16px 14px;color:var(--soft)}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--soft)}
+a{color:var(--brand)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.about{margin-top:28px;max-width:72ch}
-.about h2{font-size:17px;font-weight:600;margin:24px 0 8px}
-.about h3{font-size:14px;font-weight:600;margin:16px 0 4px}
-.about p,.about li{color:var(--fg);margin:0 0 8px}
-.about a{color:var(--accent)}
-footer{margin-top:32px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
-footer a{color:var(--accent)}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-  <h1>Generador de cuadrícula PNG <small>gratis, sin registro y sin marcas de agua</small></h1>
+  <header>
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-ink)" stroke-width="1.6"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>
+    <div>
+      <h1>Generador de cuadrícula PNG</h1>
+      <p class="tag">Rejillas a tu medida, listas para descargar. Gratis, sin cuentas y sin marcas de agua.</p>
+    </div>
+  </header>
 
-  <div class="preview">
-    <div class="stage"><canvas id="cv" aria-label="Vista previa de la cuadrícula"></canvas></div>
-    <div class="bar">
-      <button id="bCopyB64" type="button">Copiar Base64…</button>
-      <button id="bSave" type="button">Guardar como…</button>
-      <button id="bCopy" type="button">Copiar al portapapeles</button>
+  <div class="layout">
+    <section class="view" aria-label="Vista previa">
+      <div class="card">
+        <div class="top"><strong>Así quedará tu imagen</strong><span id="dims">—</span></div>
+        <div class="stage"><canvas id="cv" aria-label="Vista previa de la cuadrícula"></canvas></div>
+        <div class="acts">
+          <button id="bSave" class="main" type="button">Descargar PNG</button>
+          <button id="bCopy" type="button">Copiar imagen</button>
+          <button id="bCopyB64" type="button">Copiar Base64</button>
+        </div>
+        <div id="status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <section class="card">
+        <h2><b>1</b>Forma del trazo</h2>
+        <div class="shapes" role="radiogroup" aria-label="Forma del trazo">
+          <label class="shape"><input type="radio" name="style" value="solid" checked>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Líneas</label>
+          <label class="shape"><input type="radio" name="style" value="dashed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Guiones</label>
+          <label class="shape"><input type="radio" name="style" value="dotted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="0 3" stroke-linecap="round"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Puntitos</label>
+          <label class="shape"><input type="radio" name="style" value="cross">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h6M5 2v6M16 5h6M19 2v6M2 19h6M19 16v6M16 19h6M5 16v6M9 12h6M12 9v6"/></svg>Cruces</label>
+          <label class="shape"><input type="radio" name="style" value="points">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="4" cy="4" r="1.7"/><circle cx="12" cy="4" r="1.7"/><circle cx="20" cy="4" r="1.7"/><circle cx="4" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="20" cy="12" r="1.7"/><circle cx="4" cy="20" r="1.7"/><circle cx="12" cy="20" r="1.7"/><circle cx="20" cy="20" r="1.7"/></svg>Nodos</label>
+        </div>
+        <div class="extra grid2" data-for="dashed" hidden>
+          <div class="fld"><label for="dashLen">Largo de cada guion</label><div class="unit" data-u="px"><input id="dashLen" type="number" min="1" value="10"></div></div>
+          <div class="fld"><label for="dashGap">Hueco entre guiones</label><div class="unit" data-u="px"><input id="dashGap" type="number" min="1" value="6"></div></div>
+        </div>
+        <div class="extra grid2" data-for="dotted" hidden>
+          <div class="fld"><label for="dotGap">Distancia entre puntos</label><div class="unit" data-u="px"><input id="dotGap" type="number" min="1" value="6"></div></div>
+        </div>
+        <div class="extra grid2" data-for="cross" hidden>
+          <div class="fld"><label for="crossLen">Tamaño de cada cruz</label><div class="unit" data-u="px"><input id="crossLen" type="number" min="1" value="16"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>2</b>Medidas</h2>
+        <div class="grid2">
+          <div class="fld"><label for="cols">Columnas</label><input id="cols" type="number" min="1" max="500" value="10"></div>
+          <div class="fld"><label for="rows">Filas</label><input id="rows" type="number" min="1" max="500" value="10"></div>
+          <div class="fld"><label for="cw">Ancho del cuadro</label><div class="unit" data-u="px"><input id="cw" type="number" min="1" max="2000" value="40"></div></div>
+          <div class="fld"><label for="ch">Alto del cuadro</label><div class="unit" data-u="px"><input id="ch" type="number" min="1" max="2000" value="40"></div></div>
+          <div class="fld"><label for="lw">Grosor del trazo</label><div class="unit" data-u="px"><input id="lw" type="number" min="0" max="200" step="0.5" value="2"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>3</b>Colores</h2>
+        <div class="clr" data-key="lineColor" data-def="#1d2b25">
+          <span class="name" id="lineColorName">Trazo</span>
+        </div>
+        <div class="clr" data-key="cellColor" data-def="#ffffff" data-clear>
+          <span class="name" id="cellColorName">Interior de los cuadros</span>
+        </div>
+        <div class="clr" data-key="bgColor" data-def="#ffffff" data-clear>
+          <span class="name" id="bgColorName">Fondo de la imagen</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>4</b>Márgenes</h2>
+        <div class="grid2">
+          <div class="fld"><label for="gap">Separación entre cuadros</label><div class="unit" data-u="px"><input id="gap" type="number" min="0" max="1000" value="0"></div></div>
+          <div class="fld"><label for="pad">Margen exterior</label><div class="unit" data-u="px"><input id="pad" type="number" min="0" max="2000" value="10"></div></div>
+        </div>
+      </section>
     </div>
   </div>
-  <div class="meta"><span id="dims">—</span><span id="status" role="status"></span></div>
 
-  <fieldset>
-    <legend>✦ Opciones de herramientas</legend>
-    <div class="cols">
-      <div>
-        <h2>Tamaño de la cuadrícula</h2>
-        <div class="pair">
-          <div class="f"><input id="rows" type="number" min="1" max="500" value="10"><label for="rows">Filas.</label></div>
-          <div class="f"><input id="cols" type="number" min="1" max="500" value="10"><label for="cols">Columnas.</label></div>
-          <div class="f"><input id="cw" type="number" min="1" max="2000" value="40"><label for="cw">Ancho de celda.</label></div>
-          <div class="f"><input id="ch" type="number" min="1" max="2000" value="40"><label for="ch">Altura de la celda.</label></div>
-        </div>
-        <div class="f color"><input id="cellColor" type="text" value="transparent" spellcheck="false"><label for="cellColor">Color de relleno de las celdas de la cuadrícula.</label></div>
-      </div>
+  <div class="info">
+    <section>
+      <h2>Cómo crear una cuadrícula PNG</h2>
+      <ol class="steps">
+        <li>Escoge la forma del trazo: líneas, guiones, puntitos, cruces o nodos.</li>
+        <li>Indica cuántas columnas y filas quieres, cuánto mide cada cuadro y qué grosor tiene el trazo.</li>
+        <li>Elige los colores. Marca <strong>Transparente</strong> en el interior o el fondo para que no tengan color.</li>
+        <li>Si lo necesitas, separa los cuadros o deja un margen alrededor.</li>
+        <li>Pulsa <strong>Descargar PNG</strong>, o <strong>Copiar imagen</strong> para pegarla directamente en otro programa.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>Preguntas frecuentes</h2>
+      <details><summary>¿Cuánto cuesta?</summary><p>Nada. No hay pagos, cuentas ni marcas de agua, y el código es abierto: cualquiera puede revisarlo, copiarlo o mejorarlo.</p></details>
+      <details><summary>¿Cómo consigo un fondo transparente?</summary><p>Deja marcada la casilla <strong>Transparente</strong> en «Interior de los cuadros» y en «Fondo de la imagen». El PNG conserva la transparencia; el damero de la vista previa solo sirve para que se note y no aparece en la imagen.</p></details>
+      <details><summary>¿Se sube mi imagen a algún sitio?</summary><p>No. Todo se dibuja en tu navegador y nada sale de tu equipo.</p></details>
+      <details><summary>¿Para qué puedo usarla?</summary><p>Plantillas de pixel art, punto de cruz y bordado, caligrafía, papel cuadriculado para imprimir, guías de maquetación, tableros para juegos de mesa, capas de ayuda para dibujar y referencias de medidas.</p></details>
+      <details><summary>¿Hay un tamaño máximo?</summary><p>Sí: 16.000 píxeles por lado, para que el navegador no se quede colgado.</p></details>
+      <details><summary>¿Puedo escribir colores a mano?</summary><p>Sí. Además del selector, el campo de texto acepta cualquier color CSS: <code>#ff8800</code>, <code>rgb(0 0 0 / 50%)</code>, <code>teal</code>…</p></details>
+    </section>
+  </div>
 
-      <div>
-        <h2>Líneas de cuadrícula</h2>
-        <div class="f"><input id="lw" type="number" min="0" max="200" step="0.5" value="2"><label for="lw">Ancho de línea de la cuadrícula.</label></div>
-        <div class="f color"><input id="lineColor" type="text" value="black" spellcheck="false"><label for="lineColor">Color de la línea de la cuadrícula.</label></div>
-      </div>
-
-      <div>
-        <h2>Estilo de línea de cuadrícula</h2>
-        <label class="radio"><input type="radio" name="style" id="sSolid" value="solid" checked> Cuadrícula de líneas continuas</label>
-        <label class="radio"><input type="radio" name="style" id="sDash" value="dashed"> Cuadrícula de líneas discontinuas</label>
-        <div class="sub pair" data-for="dashed">
-          <div class="f"><input id="dashLen" type="number" min="1" value="10"><label for="dashLen">Longitud del guion.</label></div>
-          <div class="f"><input id="dashGap" type="number" min="1" value="6"><label for="dashGap">Espacio para guiones.</label></div>
-        </div>
-        <label class="radio"><input type="radio" name="style" id="sDot" value="dotted"> Cuadrícula de líneas punteadas</label>
-        <div class="sub" data-for="dotted">
-          <div class="f"><input id="dotGap" type="number" min="1" value="6"><label for="dotGap">Espacio entre puntos.</label></div>
-        </div>
-        <label class="radio"><input type="radio" name="style" id="sCross" value="cross"> Cuadrícula de mira</label>
-        <div class="sub" data-for="cross">
-          <div class="f"><input id="crossLen" type="number" min="1" value="16"><label for="crossLen">Longitud de la línea transversal.</label></div>
-        </div>
-        <label class="radio"><input type="radio" name="style" id="sPoints" value="points"> Cuadrícula de puntos</label>
-      </div>
-
-      <div>
-        <h2>Espaciado de la cuadrícula</h2>
-        <div class="f"><input id="gap" type="number" min="0" max="1000" value="0"><label for="gap">Espacio entre las celdas de la cuadrícula.</label></div>
-        <div class="f"><input id="pad" type="number" min="0" max="2000" value="10"><label for="pad">Relleno alrededor de la cuadrícula.</label></div>
-        <div class="f color"><input id="bgColor" type="text" value="transparent" spellcheck="false"><label for="bgColor">Color de fondo detrás de la cuadrícula.</label></div>
-      </div>
-    </div>
-  </fieldset>
-  <section class="about">
-    <h2>Cómo crear una cuadrícula PNG</h2>
-    <ol>
-      <li>Elige el número de filas y columnas y el tamaño de cada celda en píxeles.</li>
-      <li>Ajusta el ancho y el color de las líneas y elige un estilo: continuas, discontinuas, punteadas, de mira o de puntos.</li>
-      <li>Si quieres, separa las celdas, agrega relleno alrededor y cambia el color de fondo.</li>
-      <li>Pulsa <strong>Guardar como…</strong> para descargar el PNG, o <strong>Copiar al portapapeles</strong> para pegarlo en otro programa.</li>
-    </ol>
-    <h2>Preguntas frecuentes</h2>
-    <h3>¿Es gratis?</h3>
-    <p>Sí, completamente. No hay pagos, registros ni marcas de agua. El código es abierto y cualquiera puede revisarlo o copiarlo.</p>
-    <h3>¿Cómo hago una cuadrícula con fondo transparente?</h3>
-    <p>Deja <em>transparent</em> en el color de relleno de las celdas y en el color de fondo. El PNG se guarda con transparencia; el patrón de cuadros grises de la vista previa no forma parte de la imagen.</p>
-    <h3>¿Mis imágenes se suben a algún servidor?</h3>
-    <p>No. Todo se dibuja en tu navegador y nada sale de tu equipo.</p>
-    <h3>¿Para qué sirve?</h3>
-    <p>Plantillas para pixel art, punto de cruz y bordado, caligrafía, papel cuadriculado para imprimir, guías de diseño y maquetación, mapas de juegos de mesa, superposiciones para dibujo y referencias de medidas.</p>
-    <h3>¿Qué tamaño máximo puede tener?</h3>
-    <p>Hasta 16.000 píxeles por lado, para que el navegador no se bloquee.</p>
-  </section>
   <footer>Herramienta libre y de código abierto (licencia MIT). <a href="https://github.com/Juaincha/generador-cuadricula-png">Ver el código en GitHub</a>.</footer>
 </div>
 
@@ -179,45 +246,64 @@ footer a{color:var(--accent)}
   const cv = $('cv'), ctx = cv.getContext('2d');
   const MAX_SIDE = 16000;
 
-  // ---- color inputs with swatch + native picker ----
+  // ---- utilidades de color ----
   const probe = document.createElement('canvas').getContext('2d');
+  const validColor = v => v.trim()!=='' && CSS.supports('color', v.trim());
   function toHex(c){ probe.fillStyle='#000'; probe.fillStyle=c; const v=probe.fillStyle; return v.startsWith('#')?v:'#000000'; }
-  function validColor(v){ return v.trim()!=='' && CSS.supports('color', v.trim()); }
   function isTransparent(v){ v=v.trim().toLowerCase(); if(v==='transparent') return true;
-    probe.fillStyle='#010203'; probe.fillStyle=v; const s=probe.fillStyle; return /rgba\(.*,\s*0\)$/.test(s); }
-  document.querySelectorAll('.color').forEach(box=>{
-    const txt = box.querySelector('input[type=text]');
-    const sw = document.createElement('label'); sw.className='sw'; sw.title='Elegir color';
-    const fill = document.createElement('span');
-    const pick = document.createElement('input'); pick.type='color'; pick.id=txt.id+'Pick'; pick.setAttribute('aria-label','Selector de color');
-    sw.append(fill,pick); box.insertBefore(sw, txt.nextSibling);
-    const sync=()=>{ const v=txt.value; const ok=validColor(v); txt.classList.toggle('bad',!ok);
-      fill.style.background = ok && !isTransparent(v) ? v.trim() : 'transparent';
-      if(ok && !isTransparent(v)) pick.value = toHex(v.trim()); };
+    probe.fillStyle='#010203'; probe.fillStyle=v; return /rgba\(.*,\s*0\)$/.test(probe.fillStyle); }
+
+  // ---- filas de color: muestra + selector + texto (+ casilla Transparente) ----
+  const colorGetters = {};
+  document.querySelectorAll('.clr').forEach(row=>{
+    const key=row.dataset.key, def=row.dataset.def, clearable=row.hasAttribute('data-clear');
+    const dot=document.createElement('label'); dot.className='dot'; dot.title='Elegir color';
+    const fill=document.createElement('span');
+    const pick=document.createElement('input'); pick.type='color'; pick.value=def;
+    pick.setAttribute('aria-label','Selector de color: '+$(key+'Name').textContent);
+    dot.append(fill,pick);
+    const txt=document.createElement('input'); txt.type='text'; txt.id=key; txt.value=def; txt.spellcheck=false;
+    txt.setAttribute('aria-labelledby',key+'Name');
+    row.append(dot,txt);
+    let chk=null;
+    if(clearable){
+      const lab=document.createElement('label'); lab.className='see';
+      chk=document.createElement('input'); chk.type='checkbox'; chk.checked=true; chk.id=key+'Clear';
+      lab.append(chk,'Transparente'); row.append(lab);
+    } else row.append(document.createElement('span'));
+    const sync=()=>{
+      const off=!!(chk&&chk.checked), v=txt.value, ok=validColor(v);
+      txt.disabled=off; pick.disabled=off; dot.classList.toggle('off',off);
+      txt.classList.toggle('bad',!off&&!ok);
+      fill.style.background = !off&&ok&&!isTransparent(v) ? v.trim() : 'transparent';
+      if(!off&&ok&&!isTransparent(v)) pick.value=toHex(v.trim());
+    };
     pick.addEventListener('input',()=>{ txt.value=pick.value; sync(); render(); });
-    txt.addEventListener('input',sync); txt._sync=sync; sync();
+    txt.addEventListener('input',()=>{ sync(); render(); });
+    if(chk) chk.addEventListener('change',()=>{ sync(); render(); });
+    sync();
+    colorGetters[key]=()=>{ if(chk&&chk.checked) return 'transparent'; const v=txt.value.trim(); return validColor(v)?v:def; };
   });
 
-  const num = (id,def,min=0)=>{ const v=parseFloat($(id).value); return isFinite(v)&&v>=min?v:def; };
-  const col = (id,def)=>{ const v=$(id).value.trim(); return validColor(v)?v:def; };
-  const style = ()=>document.querySelector('input[name=style]:checked').value;
+  const num=(id,def,min=0)=>{ const v=parseFloat($(id).value); return isFinite(v)&&v>=min?v:def; };
+  const style=()=>document.querySelector('input[name=style]:checked').value;
 
   function opts(){
     return {
       rows:Math.max(1,Math.round(num('rows',10,1))), cols:Math.max(1,Math.round(num('cols',10,1))),
-      cw:num('cw',40,1), ch:num('ch',40,1), cell:col('cellColor','transparent'),
-      lw:num('lw',2,0), line:col('lineColor','black'), style:style(),
+      cw:num('cw',40,1), ch:num('ch',40,1), cell:colorGetters.cellColor(),
+      lw:num('lw',2,0), line:colorGetters.lineColor(), style:style(),
       dash:num('dashLen',10,1), dgap:num('dashGap',6,1), dot:num('dotGap',6,1), cross:num('crossLen',16,1),
-      gap:num('gap',0,0), pad:num('pad',10,0), bg:col('bgColor','transparent')
+      gap:num('gap',0,0), pad:num('pad',10,0), bg:colorGetters.bgColor()
     };
   }
 
-  // Geometry shared by every style: cell rects, line segments and intersection points.
+  // Geometría común: rectángulos de cuadros, segmentos e intersecciones.
   function geometry(o){
-    const inset = o.lw/2;
-    const gridW = o.cols*o.cw + (o.cols-1)*o.gap, gridH = o.rows*o.ch + (o.rows-1)*o.gap;
-    const W = Math.ceil(gridW + 2*o.pad + o.lw), H = Math.ceil(gridH + 2*o.pad + o.lw);
-    const ox = o.pad+inset, oy = o.pad+inset;
+    const inset=o.lw/2;
+    const gridW=o.cols*o.cw+(o.cols-1)*o.gap, gridH=o.rows*o.ch+(o.rows-1)*o.gap;
+    const W=Math.ceil(gridW+2*o.pad+o.lw), H=Math.ceil(gridH+2*o.pad+o.lw);
+    const ox=o.pad+inset, oy=o.pad+inset;
     const cells=[], segs=[], pts=[];
     for(let r=0;r<o.rows;r++) for(let c=0;c<o.cols;c++)
       cells.push([ox+c*(o.cw+o.gap), oy+r*(o.ch+o.gap), o.cw, o.ch]);
@@ -251,7 +337,7 @@ footer a{color:var(--accent)}
       c.stroke(); return;
     }
     if(o.style==='dashed'){ c.setLineDash([o.dash,o.dgap]); c.lineCap='butt'; }
-    else if(o.style==='dotted'){ c.setLineDash([0, o.dot+o.lw]); c.lineCap='round'; }
+    else if(o.style==='dotted'){ c.setLineDash([0,o.dot+o.lw]); c.lineCap='round'; }
     else { c.setLineDash([]); c.lineCap='square'; }
     for(const [x1,y1,x2,y2] of g.segs){ c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); }
     c.setLineDash([]);
@@ -264,24 +350,20 @@ footer a{color:var(--accent)}
     cancelAnimationFrame(raf);
     raf=requestAnimationFrame(()=>{
       const o=opts(), g=geometry(o);
-      if(g.W>MAX_SIDE||g.H>MAX_SIDE){ setStatus(`La imagen sería de ${g.W}×${g.H} px. Reduce filas, columnas o tamaño de celda (máx. ${MAX_SIDE} px por lado).`,'err'); return; }
+      document.querySelectorAll('.extra').forEach(el=>{ el.hidden = el.dataset.for!==o.style; });
+      if(g.W>MAX_SIDE||g.H>MAX_SIDE){ setStatus(`Saldría una imagen de ${g.W}×${g.H} px. Baja columnas, filas o tamaño de cuadro (máximo ${MAX_SIDE} px por lado).`,'err'); return; }
       cv.width=g.W; cv.height=g.H; draw(g,o,ctx);
-      $('dims').textContent=`${g.W} × ${g.H} px · ${o.rows}×${o.cols} celdas`;
-      document.querySelectorAll('.sub').forEach(el=>el.classList.toggle('off', el.dataset.for!==o.style));
+      $('dims').textContent=`${g.W} × ${g.H} px · ${o.cols}×${o.rows} cuadros`;
       if($('status').className==='err') setStatus('');
     });
   }
 
-  document.querySelectorAll('input').forEach(i=>{
+  document.querySelectorAll('.controls input[type=number], input[name=style]').forEach(i=>{
     i.addEventListener('input',render); i.addEventListener('change',render);
   });
-  // Focusing a style's own field selects that style
-  document.querySelectorAll('.sub').forEach(el=>el.addEventListener('focusin',()=>{
-    const r=document.querySelector(`input[name=style][value=${el.dataset.for}]`); if(r&&!r.checked){ r.checked=true; render(); }
-  }));
 
-  const blob = ()=>new Promise(res=>cv.toBlob(res,'image/png'));
-  const fname = ()=>{ const o=opts(); return `cuadricula-${o.rows}x${o.cols}.png`; };
+  const blob=()=>new Promise(res=>cv.toBlob(res,'image/png'));
+  const fname=()=>{ const o=opts(); return `cuadricula-${o.cols}x${o.rows}.png`; };
 
   $('bSave').addEventListener('click', async ()=>{
     const b=await blob();
@@ -289,20 +371,20 @@ footer a{color:var(--accent)}
     a.href=URL.createObjectURL(b); a.download=fname();
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=>URL.revokeObjectURL(a.href),4000);
-    setStatus('Imagen descargada.','ok');
+    setStatus('Listo: el PNG se ha descargado.','ok');
   });
 
   $('bCopy').addEventListener('click', ()=>{
+    const fail=()=>setStatus('Tu navegador no deja copiar imágenes desde aquí. Prueba con clic derecho → «Copiar imagen».','err');
     try{
-      const item = new ClipboardItem({'image/png': blob()});
-      navigator.clipboard.write([item]).then(()=>setStatus('Imagen copiada al portapapeles.','ok'),
-        ()=>setStatus('El navegador no permitió copiar la imagen. Usa clic derecho → "Copiar imagen".','err'));
-    }catch(e){ setStatus('El navegador no permitió copiar la imagen. Usa clic derecho → "Copiar imagen".','err'); }
+      const item=new ClipboardItem({'image/png':blob()});
+      navigator.clipboard.write([item]).then(()=>setStatus('Imagen copiada. Ya puedes pegarla donde quieras.','ok'),fail);
+    }catch(e){ fail(); }
   });
 
   $('bCopyB64').addEventListener('click', ()=>{
     const url=cv.toDataURL('image/png');
-    navigator.clipboard.writeText(url).then(()=>setStatus(`Data URL copiada (${Math.round(url.length/1024)} KB).`,'ok'),
+    navigator.clipboard.writeText(url).then(()=>setStatus(`Base64 copiado como data URL (${Math.round(url.length/1024)} KB).`,'ok'),
       ()=>setStatus('No se pudo copiar el texto Base64.','err'));
   });
 
