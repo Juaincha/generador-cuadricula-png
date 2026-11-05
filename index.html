@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Generador de cuadrícula PNG gratis, sin registro</title>
+<meta name="description" content="Crea cuadrículas PNG gratis en tu navegador: filas, columnas, tamaño de celda, líneas continuas, discontinuas, punteadas, de mira o de puntos, fondo transparente y colores. Sin registro, sin marcas de agua.">
+<meta name="keywords" content="generador de cuadrícula, cuadrícula png, cuadricula transparente, grid png, plantilla cuadriculada, pixel art, papel cuadriculado">
+<link rel="canonical" href="https://juaincha.github.io/generador-cuadricula-png/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Generador de cuadrícula PNG gratis">
+<meta property="og:description" content="Crea y descarga cuadrículas PNG con fondo transparente. Gratis, sin registro y de código abierto.">
+<meta property="og:url" content="https://juaincha.github.io/generador-cuadricula-png/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M1 1h14v14H1zM5.7 1v14M10.3 1v14M1 5.7h14M1 10.3h14' fill='none' stroke='%233f6593' stroke-width='1.4'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Generador de cuadrícula PNG","url":"https://juaincha.github.io/generador-cuadricula-png/","applicationCategory":"DesignApplication","operatingSystem":"Cualquiera (navegador web)","inLanguage":"es","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: preview canvas on top with an action bar, then four option columns that stack on phones */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --fg:#1d2733; --muted:#5d6b7c; --line:#cfd7e2;
+  --accent:#3f6593; --accent-ink:#ffffff; --accent-hover:#345580;
+  --check-a:#ffffff; --check-b:#e6eaf0; --ok:#2f7d4f; --err:#b3392f;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12171e; --panel:#1a212b; --fg:#e3e9f0; --muted:#9aa8b8; --line:#2e3946;
+  --accent:#5b86b8; --accent-ink:#0d1219; --accent-hover:#7099c8;
+  --check-a:#2a323d; --check-b:#222932; --ok:#5fbf86; --err:#e5776d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12171e; --panel:#1a212b; --fg:#e3e9f0; --muted:#9aa8b8; --line:#2e3946;
+  --accent:#5b86b8; --accent-ink:#0d1219; --accent-hover:#7099c8;
+  --check-a:#2a323d; --check-b:#222932; --ok:#5fbf86; --err:#e5776d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.45}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:20px;font-weight:600;color:var(--accent);margin:0 0 10px;letter-spacing:-.01em}
+h1 small{font-weight:400;color:var(--muted);font-size:13px;margin-left:8px}
+.preview{border:1px solid var(--accent);border-radius:6px;overflow:hidden;background:var(--panel)}
+.stage{min-height:240px;max-height:560px;overflow:auto;display:flex;padding:16px;
+  background-color:var(--check-a);
+  background-image:linear-gradient(45deg,var(--check-b) 25%,transparent 25%,transparent 75%,var(--check-b) 75%),
+    linear-gradient(45deg,var(--check-b) 25%,transparent 25%,transparent 75%,var(--check-b) 75%);
+  background-size:20px 20px;background-position:0 0,10px 10px}
+.stage canvas{margin:auto;display:block;max-width:none}
+.bar{display:grid;grid-template-columns:repeat(3,1fr);background:var(--accent)}
+.bar button{background:none;border:0;color:var(--accent-ink);font:600 13px var(--sans);padding:13px 8px;cursor:pointer}
+.bar button+button{border-left:1px solid rgba(255,255,255,.18)}
+.bar button:hover{background:var(--accent-hover)}
+.bar button:focus-visible{outline:2px solid var(--accent-ink);outline-offset:-4px}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font:12px var(--mono);color:var(--muted);padding:8px 2px 0}
+#status.ok{color:var(--ok)} #status.err{color:var(--err)}
+fieldset{margin:18px 0 0;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:10px 14px 16px}
+legend{padding:0 6px;font-size:13px;color:var(--fg)}
+.cols{display:grid;grid-template-columns:1.05fr 1fr 1.05fr 1fr;gap:24px}
+@media (max-width:860px){.cols{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.cols{grid-template-columns:1fr}}
+h2{font-size:15px;font-weight:500;margin:6px 0 12px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.f{margin-bottom:10px;min-width:0}
+.f label,.hint{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+input[type=number],input[type=text]{width:100%;font:14px var(--mono);color:var(--fg);background:var(--panel);
+  border:1px solid var(--line);border-radius:3px;padding:6px 8px}
+input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+input.bad{border-color:var(--err)}
+.color{position:relative}
+.color input[type=text]{padding-right:34px}
+.sw{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:1px solid var(--line);
+  background-image:linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%),linear-gradient(45deg,#ccc 25%,transparent 25%,transparent 75%,#ccc 75%);
+  background-color:#fff;background-size:8px 8px;background-position:0 0,4px 4px;overflow:hidden;cursor:pointer}
+.sw span{position:absolute;inset:0}
+.sw input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:0;padding:0}
+.radio{display:flex;align-items:center;gap:8px;margin:2px 0 8px;cursor:pointer}
+.radio input{accent-color:var(--accent);margin:0}
+.sub{margin:0 0 10px 0}
+.sub.off{opacity:.55}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.about{margin-top:28px;max-width:72ch}
+.about h2{font-size:17px;font-weight:600;margin:24px 0 8px}
+.about h3{font-size:14px;font-weight:600;margin:16px 0 4px}
+.about p,.about li{color:var(--fg);margin:0 0 8px}
+.about a{color:var(--accent)}
+footer{margin-top:32px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>Generador de cuadrícula PNG <small>gratis, sin registro y sin marcas de agua</small></h1>
+
+  <div class="preview">
+    <div class="stage"><canvas id="cv" aria-label="Vista previa de la cuadrícula"></canvas></div>
+    <div class="bar">
+      <button id="bCopyB64" type="button">Copiar Base64…</button>
+      <button id="bSave" type="button">Guardar como…</button>
+      <button id="bCopy" type="button">Copiar al portapapeles</button>
+    </div>
+  </div>
+  <div class="meta"><span id="dims">—</span><span id="status" role="status"></span></div>
+
+  <fieldset>
+    <legend>✦ Opciones de herramientas</legend>
+    <div class="cols">
+      <div>
+        <h2>Tamaño de la cuadrícula</h2>
+        <div class="pair">
+          <div class="f"><input id="rows" type="number" min="1" max="500" value="10"><label for="rows">Filas.</label></div>
+          <div class="f"><input id="cols" type="number" min="1" max="500" value="10"><label for="cols">Columnas.</label></div>
+          <div class="f"><input id="cw" type="number" min="1" max="2000" value="40"><label for="cw">Ancho de celda.</label></div>
+          <div class="f"><input id="ch" type="number" min="1" max="2000" value="40"><label for="ch">Altura de la celda.</label></div>
+        </div>
+        <div class="f color"><input id="cellColor" type="text" value="transparent" spellcheck="false"><label for="cellColor">Color de relleno de las celdas de la cuadrícula.</label></div>
+      </div>
+
+      <div>
+        <h2>Líneas de cuadrícula</h2>
+        <div class="f"><input id="lw" type="number" min="0" max="200" step="0.5" value="2"><label for="lw">Ancho de línea de la cuadrícula.</label></div>
+        <div class="f color"><input id="lineColor" type="text" value="black" spellcheck="false"><label for="lineColor">Color de la línea de la cuadrícula.</label></div>
+      </div>
+
+      <div>
+        <h2>Estilo de línea de cuadrícula</h2>
+        <label class="radio"><input type="radio" name="style" id="sSolid" value="solid" checked> Cuadrícula de líneas continuas</label>
+        <label class="radio"><input type="radio" name="style" id="sDash" value="dashed"> Cuadrícula de líneas discontinuas</label>
+        <div class="sub pair" data-for="dashed">
+          <div class="f"><input id="dashLen" type="number" min="1" value="10"><label for="dashLen">Longitud del guion.</label></div>
+          <div class="f"><input id="dashGap" type="number" min="1" value="6"><label for="dashGap">Espacio para guiones.</label></div>
+        </div>
+        <label class="radio"><input type="radio" name="style" id="sDot" value="dotted"> Cuadrícula de líneas punteadas</label>
+        <div class="sub" data-for="dotted">
+          <div class="f"><input id="dotGap" type="number" min="1" value="6"><label for="dotGap">Espacio entre puntos.</label></div>
+        </div>
+        <label class="radio"><input type="radio" name="style" id="sCross" value="cross"> Cuadrícula de mira</label>
+        <div class="sub" data-for="cross">
+          <div class="f"><input id="crossLen" type="number" min="1" value="16"><label for="crossLen">Longitud de la línea transversal.</label></div>
+        </div>
+        <label class="radio"><input type="radio" name="style" id="sPoints" value="points"> Cuadrícula de puntos</label>
+      </div>
+
+      <div>
+        <h2>Espaciado de la cuadrícula</h2>
+        <div class="f"><input id="gap" type="number" min="0" max="1000" value="0"><label for="gap">Espacio entre las celdas de la cuadrícula.</label></div>
+        <div class="f"><input id="pad" type="number" min="0" max="2000" value="10"><label for="pad">Relleno alrededor de la cuadrícula.</label></div>
+        <div class="f color"><input id="bgColor" type="text" value="transparent" spellcheck="false"><label for="bgColor">Color de fondo detrás de la cuadrícula.</label></div>
+      </div>
+    </div>
+  </fieldset>
+  <section class="about">
+    <h2>Cómo crear una cuadrícula PNG</h2>
+    <ol>
+      <li>Elige el número de filas y columnas y el tamaño de cada celda en píxeles.</li>
+      <li>Ajusta el ancho y el color de las líneas y elige un estilo: continuas, discontinuas, punteadas, de mira o de puntos.</li>
+      <li>Si quieres, separa las celdas, agrega relleno alrededor y cambia el color de fondo.</li>
+      <li>Pulsa <strong>Guardar como…</strong> para descargar el PNG, o <strong>Copiar al portapapeles</strong> para pegarlo en otro programa.</li>
+    </ol>
+    <h2>Preguntas frecuentes</h2>
+    <h3>¿Es gratis?</h3>
+    <p>Sí, completamente. No hay pagos, registros ni marcas de agua. El código es abierto y cualquiera puede revisarlo o copiarlo.</p>
+    <h3>¿Cómo hago una cuadrícula con fondo transparente?</h3>
+    <p>Deja <em>transparent</em> en el color de relleno de las celdas y en el color de fondo. El PNG se guarda con transparencia; el patrón de cuadros grises de la vista previa no forma parte de la imagen.</p>
+    <h3>¿Mis imágenes se suben a algún servidor?</h3>
+    <p>No. Todo se dibuja en tu navegador y nada sale de tu equipo.</p>
+    <h3>¿Para qué sirve?</h3>
+    <p>Plantillas para pixel art, punto de cruz y bordado, caligrafía, papel cuadriculado para imprimir, guías de diseño y maquetación, mapas de juegos de mesa, superposiciones para dibujo y referencias de medidas.</p>
+    <h3>¿Qué tamaño máximo puede tener?</h3>
+    <p>Hasta 16.000 píxeles por lado, para que el navegador no se bloquee.</p>
+  </section>
+  <footer>Herramienta libre y de código abierto (licencia MIT). <a href="https://github.com/Juaincha/generador-cuadricula-png">Ver el código en GitHub</a>.</footer>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const cv = $('cv'), ctx = cv.getContext('2d');
+  const MAX_SIDE = 16000;
+
+  // ---- color inputs with swatch + native picker ----
+  const probe = document.createElement('canvas').getContext('2d');
+  function toHex(c){ probe.fillStyle='#000'; probe.fillStyle=c; const v=probe.fillStyle; return v.startsWith('#')?v:'#000000'; }
+  function validColor(v){ return v.trim()!=='' && CSS.supports('color', v.trim()); }
+  function isTransparent(v){ v=v.trim().toLowerCase(); if(v==='transparent') return true;
+    probe.fillStyle='#010203'; probe.fillStyle=v; const s=probe.fillStyle; return /rgba\(.*,\s*0\)$/.test(s); }
+  document.querySelectorAll('.color').forEach(box=>{
+    const txt = box.querySelector('input[type=text]');
+    const sw = document.createElement('label'); sw.className='sw'; sw.title='Elegir color';
+    const fill = document.createElement('span');
+    const pick = document.createElement('input'); pick.type='color'; pick.id=txt.id+'Pick'; pick.setAttribute('aria-label','Selector de color');
+    sw.append(fill,pick); box.insertBefore(sw, txt.nextSibling);
+    const sync=()=>{ const v=txt.value; const ok=validColor(v); txt.classList.toggle('bad',!ok);
+      fill.style.background = ok && !isTransparent(v) ? v.trim() : 'transparent';
+      if(ok && !isTransparent(v)) pick.value = toHex(v.trim()); };
+    pick.addEventListener('input',()=>{ txt.value=pick.value; sync(); render(); });
+    txt.addEventListener('input',sync); txt._sync=sync; sync();
+  });
+
+  const num = (id,def,min=0)=>{ const v=parseFloat($(id).value); return isFinite(v)&&v>=min?v:def; };
+  const col = (id,def)=>{ const v=$(id).value.trim(); return validColor(v)?v:def; };
+  const style = ()=>document.querySelector('input[name=style]:checked').value;
+
+  function opts(){
+    return {
+      rows:Math.max(1,Math.round(num('rows',10,1))), cols:Math.max(1,Math.round(num('cols',10,1))),
+      cw:num('cw',40,1), ch:num('ch',40,1), cell:col('cellColor','transparent'),
+      lw:num('lw',2,0), line:col('lineColor','black'), style:style(),
+      dash:num('dashLen',10,1), dgap:num('dashGap',6,1), dot:num('dotGap',6,1), cross:num('crossLen',16,1),
+      gap:num('gap',0,0), pad:num('pad',10,0), bg:col('bgColor','transparent')
+    };
+  }
+
+  // Geometry shared by every style: cell rects, line segments and intersection points.
+  function geometry(o){
+    const inset = o.lw/2;
+    const gridW = o.cols*o.cw + (o.cols-1)*o.gap, gridH = o.rows*o.ch + (o.rows-1)*o.gap;
+    const W = Math.ceil(gridW + 2*o.pad + o.lw), H = Math.ceil(gridH + 2*o.pad + o.lw);
+    const ox = o.pad+inset, oy = o.pad+inset;
+    const cells=[], segs=[], pts=[];
+    for(let r=0;r<o.rows;r++) for(let c=0;c<o.cols;c++)
+      cells.push([ox+c*(o.cw+o.gap), oy+r*(o.ch+o.gap), o.cw, o.ch]);
+    if(o.gap===0){
+      for(let c=0;c<=o.cols;c++){ const x=ox+c*o.cw; segs.push([x,oy,x,oy+gridH]); }
+      for(let r=0;r<=o.rows;r++){ const y=oy+r*o.ch; segs.push([ox,y,ox+gridW,y]); }
+      for(let r=0;r<=o.rows;r++) for(let c=0;c<=o.cols;c++) pts.push([ox+c*o.cw, oy+r*o.ch]);
+    } else {
+      for(const [x,y,w,h] of cells){
+        segs.push([x,y,x+w,y],[x+w,y,x+w,y+h],[x,y+h,x+w,y+h],[x,y,x,y+h]);
+        pts.push([x,y],[x+w,y],[x,y+h],[x+w,y+h]);
+      }
+    }
+    return {W,H,cells,segs,pts};
+  }
+
+  function draw(g,o,c){
+    c.clearRect(0,0,g.W,g.H);
+    if(!isTransparent(o.bg)){ c.fillStyle=o.bg; c.fillRect(0,0,g.W,g.H); }
+    if(!isTransparent(o.cell)){ c.fillStyle=o.cell; for(const r of g.cells) c.fillRect(...r); }
+    if(o.lw<=0 || isTransparent(o.line)) return;
+    c.strokeStyle=o.line; c.fillStyle=o.line; c.lineWidth=o.lw;
+    if(o.style==='points'){
+      const rad=Math.max(o.lw,0.75);
+      for(const [x,y] of g.pts){ c.beginPath(); c.arc(x,y,rad,0,Math.PI*2); c.fill(); }
+      return;
+    }
+    if(o.style==='cross'){
+      const h=o.cross/2; c.lineCap='butt'; c.setLineDash([]); c.beginPath();
+      for(const [x,y] of g.pts){ c.moveTo(x-h,y); c.lineTo(x+h,y); c.moveTo(x,y-h); c.lineTo(x,y+h); }
+      c.stroke(); return;
+    }
+    if(o.style==='dashed'){ c.setLineDash([o.dash,o.dgap]); c.lineCap='butt'; }
+    else if(o.style==='dotted'){ c.setLineDash([0, o.dot+o.lw]); c.lineCap='round'; }
+    else { c.setLineDash([]); c.lineCap='square'; }
+    for(const [x1,y1,x2,y2] of g.segs){ c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); }
+    c.setLineDash([]);
+  }
+
+  function setStatus(msg,kind){ const s=$('status'); s.textContent=msg||''; s.className=kind||''; }
+
+  let raf=0;
+  function render(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      const o=opts(), g=geometry(o);
+      if(g.W>MAX_SIDE||g.H>MAX_SIDE){ setStatus(`La imagen sería de ${g.W}×${g.H} px. Reduce filas, columnas o tamaño de celda (máx. ${MAX_SIDE} px por lado).`,'err'); return; }
+      cv.width=g.W; cv.height=g.H; draw(g,o,ctx);
+      $('dims').textContent=`${g.W} × ${g.H} px · ${o.rows}×${o.cols} celdas`;
+      document.querySelectorAll('.sub').forEach(el=>el.classList.toggle('off', el.dataset.for!==o.style));
+      if($('status').className==='err') setStatus('');
+    });
+  }
+
+  document.querySelectorAll('input').forEach(i=>{
+    i.addEventListener('input',render); i.addEventListener('change',render);
+  });
+  // Focusing a style's own field selects that style
+  document.querySelectorAll('.sub').forEach(el=>el.addEventListener('focusin',()=>{
+    const r=document.querySelector(`input[name=style][value=${el.dataset.for}]`); if(r&&!r.checked){ r.checked=true; render(); }
+  }));
+
+  const blob = ()=>new Promise(res=>cv.toBlob(res,'image/png'));
+  const fname = ()=>{ const o=opts(); return `cuadricula-${o.rows}x${o.cols}.png`; };
+
+  $('bSave').addEventListener('click', async ()=>{
+    const b=await blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download=fname();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    setStatus('Imagen descargada.','ok');
+  });
+
+  $('bCopy').addEventListener('click', ()=>{
+    try{
+      const item = new ClipboardItem({'image/png': blob()});
+      navigator.clipboard.write([item]).then(()=>setStatus('Imagen copiada al portapapeles.','ok'),
+        ()=>setStatus('El navegador no permitió copiar la imagen. Usa clic derecho → "Copiar imagen".','err'));
+    }catch(e){ setStatus('El navegador no permitió copiar la imagen. Usa clic derecho → "Copiar imagen".','err'); }
+  });
+
+  $('bCopyB64').addEventListener('click', ()=>{
+    const url=cv.toDataURL('image/png');
+    navigator.clipboard.writeText(url).then(()=>setStatus(`Data URL copiada (${Math.round(url.length/1024)} KB).`,'ok'),
+      ()=>setStatus('No se pudo copiar el texto Base64.','err'));
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
