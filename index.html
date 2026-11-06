@@ -7,8 +7,13 @@
 <meta name="description" content="Crea cuadrículas PNG gratis en tu navegador: filas, columnas, tamaño de celda, líneas continuas, discontinuas, punteadas, de mira o de puntos, fondo transparente y colores. Sin registro, sin marcas de agua.">
 <meta name="keywords" content="generador de cuadrícula, cuadrícula png, cuadricula transparente, grid png, plantilla cuadriculada, pixel art, papel cuadriculado">
 <link rel="canonical" href="https://juaincha.github.io/generador-cuadricula-png/">
+<link rel="alternate" hreflang="es" href="https://juaincha.github.io/generador-cuadricula-png/">
+<link rel="alternate" hreflang="en" href="https://juaincha.github.io/generador-cuadricula-png/en/">
+<link rel="alternate" hreflang="x-default" href="https://juaincha.github.io/generador-cuadricula-png/en/">
 <meta name="google-site-verification" content="v9NGRRMzeVH2bAVNfGZOa7GD7Rb3igieD5-xLVcHnQs" />
 <meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_US">
 <meta property="og:title" content="Generador de cuadrícula PNG gratis">
 <meta property="og:description" content="Crea y descarga cuadrículas PNG con fondo transparente. Gratis, sin registro y de código abierto.">
 <meta property="og:url" content="https://juaincha.github.io/generador-cuadricula-png/">
@@ -46,6 +51,10 @@ header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
 .mark svg{width:26px;height:26px}
 h1{margin:0;font-size:clamp(20px,4vw,26px);line-height:1.15;letter-spacing:-.02em}
 .tag{margin:2px 0 0;color:var(--soft);font-size:14px}
+header>div:not(.mark){flex:1;min-width:0}
+.lang{flex:none;align-self:flex-start;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1.5px solid var(--rule);border-radius:999px;background:var(--card)}
+.lang:hover{border-color:var(--brand)}
+.lang:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 
 /* Distribución: ajustes a la izquierda, vista previa a la derecha */
 .layout{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);grid-template-areas:"ctl view";gap:24px;align-items:start}
@@ -138,6 +147,7 @@ a{color:var(--brand)}
       <h1>Generador de cuadrícula PNG</h1>
       <p class="tag">Rejillas a tu medida, listas para descargar. Gratis, sin cuentas y sin marcas de agua.</p>
     </div>
+    <a class="lang" href="en/" hreflang="en" lang="en">English</a>
   </header>
 
   <div class="layout">

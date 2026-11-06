@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Free PNG Grid Generator – No Sign-up, Transparent Background</title>
+<meta name="description" content="Free online grid maker: create a PNG grid with a transparent background right in your browser. Set rows, columns, cell size and line width, pick solid, dashed, dotted, crosshair or dot-grid lines, and download instantly. No sign-up, no watermark.">
+<meta name="keywords" content="grid generator png, transparent grid png, free grid maker, graph paper generator, grid overlay, dot grid, pixel art grid, grid template">
+<link rel="canonical" href="https://juaincha.github.io/generador-cuadricula-png/en/">
+<link rel="alternate" hreflang="es" href="https://juaincha.github.io/generador-cuadricula-png/">
+<link rel="alternate" hreflang="en" href="https://juaincha.github.io/generador-cuadricula-png/en/">
+<link rel="alternate" hreflang="x-default" href="https://juaincha.github.io/generador-cuadricula-png/en/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:title" content="Free PNG Grid Generator">
+<meta property="og:description" content="Make and download PNG grids with a transparent background. Free, no sign-up, open source.">
+<meta property="og:url" content="https://juaincha.github.io/generador-cuadricula-png/en/">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#f6f1e7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231f5c46'/%3E%3Cpath d='M8 8h16v16H8zM13.3 8v16M18.7 8v16M8 13.3h16M8 18.7h16' fill='none' stroke='%23f6f1e7' stroke-width='1.6'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"PNG Grid Generator","url":"https://juaincha.github.io/generador-cuadricula-png/en/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","inLanguage":"en","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<style>
+:root{
+  --bg:#f6f1e7; --card:#fffdf8; --ink:#1d2b25; --soft:#5f6b63; --rule:#e2d9c6; --field:#fbf8f1;
+  --brand:#1f5c46; --brand-ink:#f6f1e7; --brand-hover:#174a38; --brand-tint:#e3eee7;
+  --chk-a:#fffdf8; --chk-b:#ece5d6; --ok:#1f7a4d; --err:#b23a2b;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141a17; --card:#1b2420; --ink:#e8efe9; --soft:#a1aea6; --rule:#2c3833; --field:#18201c;
+  --brand:#6fc29c; --brand-ink:#0f1713; --brand-hover:#8ad3b0; --brand-tint:#203a2f;
+  --chk-a:#232d29; --chk-b:#1c2521; --ok:#6fc29c; --err:#ef8a7c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a17; --card:#1b2420; --ink:#e8efe9; --soft:#a1aea6; --rule:#2c3833; --field:#18201c;
+  --brand:#6fc29c; --brand-ink:#0f1713; --brand-hover:#8ad3b0; --brand-tint:#203a2f;
+  --chk-a:#232d29; --chk-b:#1c2521; --ok:#6fc29c; --err:#ef8a7c; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Header */
+header{display:flex;align-items:center;gap:14px;margin-bottom:24px}
+.mark{flex:none;width:44px;height:44px;border-radius:12px;background:var(--brand);display:grid;place-items:center}
+.mark svg{width:26px;height:26px}
+h1{margin:0;font-size:clamp(20px,4vw,26px);line-height:1.15;letter-spacing:-.02em}
+.tag{margin:2px 0 0;color:var(--soft);font-size:14px}
+header>div:not(.mark){flex:1;min-width:0}
+.lang{flex:none;align-self:flex-start;font-size:13px;font-weight:600;text-decoration:none;padding:6px 12px;border:1.5px solid var(--rule);border-radius:999px;background:var(--card)}
+.lang:hover{border-color:var(--brand)}
+.lang:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* Layout: settings on the left, preview on the right */
+.layout{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);grid-template-areas:"ctl view";gap:24px;align-items:start}
+.controls{grid-area:ctl;display:flex;flex-direction:column;gap:14px}
+.view{grid-area:view;position:sticky;top:16px}
+@media (max-width:840px){
+  .layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"view" "ctl"}
+  .view{position:static}
+}
+
+.card{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:16px}
+.card h2{margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);display:flex;align-items:center;gap:8px}
+.card h2 b{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand-tint);font-size:11px;letter-spacing:0}
+
+/* Style cards */
+.shapes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.shape{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 2px 8px;border:1.5px solid var(--rule);border-radius:10px;background:var(--field);cursor:pointer;font-size:12px;color:var(--soft);text-align:center}
+.shape input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.shape svg{width:26px;height:26px;color:var(--ink)}
+.shape:has(input:checked){border-color:var(--brand);background:var(--brand-tint);color:var(--ink);font-weight:600}
+.shape:has(input:focus-visible){outline:2px solid var(--brand);outline-offset:2px}
+.extra{margin-top:12px}
+.extra[hidden]{display:none}
+
+/* Fields */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.fld{min-width:0}
+.fld>label,.fld>.lbl{display:block;font-size:13px;font-weight:600;margin-bottom:4px}
+.unit{position:relative}
+.unit input{padding-right:34px}
+.unit::after{content:attr(data-u);position:absolute;right:10px;top:50%;transform:translateY(-50%);font:12px var(--mono);color:var(--soft);pointer-events:none}
+input[type=number],input[type=text]{width:100%;font:14px var(--mono);color:var(--ink);background:var(--field);border:1.5px solid var(--rule);border-radius:8px;padding:8px 10px}
+input:focus-visible{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-tint)}
+input.bad{border-color:var(--err)}
+input:disabled{opacity:.5}
+
+/* Colors */
+.clr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:8px 0;border-top:1px dashed var(--rule)}
+.clr:first-of-type{border-top:0;padding-top:0}
+.clr .name{grid-column:1/-1;font-size:13px;font-weight:600}
+.dot{position:relative;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--rule);overflow:hidden;cursor:pointer;
+  background:conic-gradient(var(--chk-b) 25%,var(--chk-a) 0 50%,var(--chk-b) 0 75%,var(--chk-a) 0) 0 0/10px 10px}
+.dot span{position:absolute;inset:0}
+.dot input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;padding:0;cursor:pointer}
+.dot.off{cursor:default}
+.see{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--soft);cursor:pointer;white-space:nowrap}
+.see input{accent-color:var(--brand);width:16px;height:16px;margin:0}
+
+/* Preview */
+.view .card{padding:0;overflow:hidden}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--rule);font-size:13px}
+.top strong{font-weight:600}
+#dims{font:12px var(--mono);color:var(--soft)}
+.stage{display:flex;overflow:auto;padding:20px;min-height:260px;max-height:min(68vh,640px);
+  background:conic-gradient(var(--chk-b) 25%,var(--chk-a) 0 50%,var(--chk-b) 0 75%,var(--chk-a) 0) 0 0/16px 16px}
+.stage canvas{margin:auto;display:block;max-width:none;box-shadow:0 0 0 1px var(--rule)}
+.acts{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;padding:12px}
+@media (max-width:520px){.acts{grid-template-columns:1fr 1fr}.acts .main{grid-column:1/-1}}
+button{font:600 14px var(--sans);border-radius:10px;padding:11px 12px;cursor:pointer;border:1.5px solid var(--rule);background:var(--field);color:var(--ink)}
+button:hover{border-color:var(--brand)}
+button.main{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.main:hover{background:var(--brand-hover);border-color:var(--brand-hover)}
+button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+#status{min-height:1.5em;padding:0 14px 12px;font-size:13px;color:var(--soft)}
+#status.ok{color:var(--ok)} #status.err{color:var(--err)}
+
+/* Guide and FAQ */
+.info{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;margin-top:40px}
+@media (max-width:840px){.info{grid-template-columns:minmax(0,1fr)}}
+.info h2{font-size:19px;margin:0 0 12px;letter-spacing:-.01em}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 14px 40px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:-2px;width:28px;height:28px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:13px;font-weight:700}
+details{background:var(--card);border:1px solid var(--rule);border-radius:12px;margin-bottom:8px}
+summary{cursor:pointer;padding:12px 16px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--brand);font-size:18px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:0;padding:0 16px 14px;color:var(--soft)}
+footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);font-size:13px;color:var(--soft)}
+a{color:var(--brand)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--brand-ink)" stroke-width="1.6"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg></div>
+    <div>
+      <h1>PNG Grid Generator</h1>
+      <p class="tag">Custom grids, ready to download. Free, no account, no watermark.</p>
+    </div>
+    <a class="lang" href="../" hreflang="es" lang="es">Español</a>
+  </header>
+
+  <div class="layout">
+    <section class="view" aria-label="Preview">
+      <div class="card">
+        <div class="top"><strong>Your image</strong><span id="dims">—</span></div>
+        <div class="stage"><canvas id="cv" aria-label="Grid preview"></canvas></div>
+        <div class="acts">
+          <button id="bSave" class="main" type="button">Download PNG</button>
+          <button id="bCopy" type="button">Copy image</button>
+          <button id="bCopyB64" type="button">Copy Base64</button>
+        </div>
+        <div id="status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <div class="controls">
+      <section class="card">
+        <h2><b>1</b>Line style</h2>
+        <div class="shapes" role="radiogroup" aria-label="Line style">
+          <label class="shape"><input type="radio" name="style" value="solid" checked>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Solid</label>
+          <label class="shape"><input type="radio" name="style" value="dashed">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="3 2"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Dashed</label>
+          <label class="shape"><input type="radio" name="style" value="dotted">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="0 3" stroke-linecap="round"><path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Dotted</label>
+          <label class="shape"><input type="radio" name="style" value="cross">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 5h6M5 2v6M16 5h6M19 2v6M2 19h6M19 16v6M16 19h6M5 16v6M9 12h6M12 9v6"/></svg>Crosses</label>
+          <label class="shape"><input type="radio" name="style" value="points">
+            <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="4" cy="4" r="1.7"/><circle cx="12" cy="4" r="1.7"/><circle cx="20" cy="4" r="1.7"/><circle cx="4" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="20" cy="12" r="1.7"/><circle cx="4" cy="20" r="1.7"/><circle cx="12" cy="20" r="1.7"/><circle cx="20" cy="20" r="1.7"/></svg>Dots</label>
+        </div>
+        <div class="extra grid2" data-for="dashed" hidden>
+          <div class="fld"><label for="dashLen">Dash length</label><div class="unit" data-u="px"><input id="dashLen" type="number" min="1" value="10"></div></div>
+          <div class="fld"><label for="dashGap">Space between dashes</label><div class="unit" data-u="px"><input id="dashGap" type="number" min="1" value="6"></div></div>
+        </div>
+        <div class="extra grid2" data-for="dotted" hidden>
+          <div class="fld"><label for="dotGap">Space between dots</label><div class="unit" data-u="px"><input id="dotGap" type="number" min="1" value="6"></div></div>
+        </div>
+        <div class="extra grid2" data-for="cross" hidden>
+          <div class="fld"><label for="crossLen">Cross size</label><div class="unit" data-u="px"><input id="crossLen" type="number" min="1" value="16"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>2</b>Size</h2>
+        <div class="grid2">
+          <div class="fld"><label for="cols">Columns</label><input id="cols" type="number" min="1" max="500" value="10"></div>
+          <div class="fld"><label for="rows">Rows</label><input id="rows" type="number" min="1" max="500" value="10"></div>
+          <div class="fld"><label for="cw">Cell width</label><div class="unit" data-u="px"><input id="cw" type="number" min="1" max="2000" value="40"></div></div>
+          <div class="fld"><label for="ch">Cell height</label><div class="unit" data-u="px"><input id="ch" type="number" min="1" max="2000" value="40"></div></div>
+          <div class="fld"><label for="lw">Line width</label><div class="unit" data-u="px"><input id="lw" type="number" min="0" max="200" step="0.5" value="2"></div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>3</b>Colors</h2>
+        <div class="clr" data-key="lineColor" data-def="#1d2b25">
+          <span class="name" id="lineColorName">Lines</span>
+        </div>
+        <div class="clr" data-key="cellColor" data-def="#ffffff" data-clear>
+          <span class="name" id="cellColorName">Cell fill</span>
+        </div>
+        <div class="clr" data-key="bgColor" data-def="#ffffff" data-clear>
+          <span class="name" id="bgColorName">Background</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><b>4</b>Spacing</h2>
+        <div class="grid2">
+          <div class="fld"><label for="gap">Gap between cells</label><div class="unit" data-u="px"><input id="gap" type="number" min="0" max="1000" value="0"></div></div>
+          <div class="fld"><label for="pad">Outer padding</label><div class="unit" data-u="px"><input id="pad" type="number" min="0" max="2000" value="10"></div></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="info">
+    <section>
+      <h2>How to make a PNG grid</h2>
+      <ol class="steps">
+        <li>Pick a line style: solid, dashed, dotted, crosses, or a dot grid.</li>
+        <li>Set the number of columns and rows, the cell size, and the line width.</li>
+        <li>Choose your colors. Tick <strong>Transparent</strong> for the cell fill or background to leave them see-through.</li>
+        <li>Optionally add a gap between cells or padding around the edge.</li>
+        <li>Click <strong>Download PNG</strong>, or <strong>Copy image</strong> to paste it straight into another app.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>FAQ</h2>
+      <details><summary>Is it really free?</summary><p>Yes. No payments, no account, no watermark. The code is open source, so anyone can read it, copy it or improve it.</p></details>
+      <details><summary>How do I get a transparent grid PNG?</summary><p>Leave <strong>Transparent</strong> ticked for both “Cell fill” and “Background”. The PNG keeps its transparency; the checkerboard in the preview is only there so you can see it and is not part of the image.</p></details>
+      <details><summary>Is my image uploaded anywhere?</summary><p>No. Everything is drawn in your browser and nothing leaves your device.</p></details>
+      <details><summary>What can I use it for?</summary><p>Printable graph paper, pixel art and cross-stitch templates, handwriting and calligraphy practice, layout guides, board game maps, drawing grid overlays, and measurement references.</p></details>
+      <details><summary>Is there a size limit?</summary><p>Yes: 16,000 pixels per side, so your browser doesn’t freeze.</p></details>
+      <details><summary>Can I type in a color?</summary><p>Yes. Besides the color picker, the text field accepts any CSS color: <code>#ff8800</code>, <code>rgb(0 0 0 / 50%)</code>, <code>teal</code>…</p></details>
+    </section>
+  </div>
+
+  <footer>Free and open-source tool (MIT license). <a href="https://github.com/Juaincha/generador-cuadricula-png">View the code on GitHub</a>.</footer>
+</div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const cv = $('cv'), ctx = cv.getContext('2d');
+  const MAX_SIDE = 16000;
+
+  // ---- color helpers ----
+  const probe = document.createElement('canvas').getContext('2d');
+  const validColor = v => v.trim()!=='' && CSS.supports('color', v.trim());
+  function toHex(c){ probe.fillStyle='#000'; probe.fillStyle=c; const v=probe.fillStyle; return v.startsWith('#')?v:'#000000'; }
+  function isTransparent(v){ v=v.trim().toLowerCase(); if(v==='transparent') return true;
+    probe.fillStyle='#010203'; probe.fillStyle=v; return /rgba\(.*,\s*0\)$/.test(probe.fillStyle); }
+
+  // ---- color rows: swatch + picker + text (+ Transparent checkbox) ----
+  const colorGetters = {};
+  document.querySelectorAll('.clr').forEach(row=>{
+    const key=row.dataset.key, def=row.dataset.def, clearable=row.hasAttribute('data-clear');
+    const dot=document.createElement('label'); dot.className='dot'; dot.title='Pick a color';
+    const fill=document.createElement('span');
+    const pick=document.createElement('input'); pick.type='color'; pick.value=def;
+    pick.setAttribute('aria-label','Color picker: '+$(key+'Name').textContent);
+    dot.append(fill,pick);
+    const txt=document.createElement('input'); txt.type='text'; txt.id=key; txt.value=def; txt.spellcheck=false;
+    txt.setAttribute('aria-labelledby',key+'Name');
+    row.append(dot,txt);
+    let chk=null;
+    if(clearable){
+      const lab=document.createElement('label'); lab.className='see';
+      chk=document.createElement('input'); chk.type='checkbox'; chk.checked=true; chk.id=key+'Clear';
+      lab.append(chk,'Transparent'); row.append(lab);
+    } else row.append(document.createElement('span'));
+    const sync=()=>{
+      const off=!!(chk&&chk.checked), v=txt.value, ok=validColor(v);
+      txt.disabled=off; pick.disabled=off; dot.classList.toggle('off',off);
+      txt.classList.toggle('bad',!off&&!ok);
+      fill.style.background = !off&&ok&&!isTransparent(v) ? v.trim() : 'transparent';
+      if(!off&&ok&&!isTransparent(v)) pick.value=toHex(v.trim());
+    };
+    pick.addEventListener('input',()=>{ txt.value=pick.value; sync(); render(); });
+    txt.addEventListener('input',()=>{ sync(); render(); });
+    if(chk) chk.addEventListener('change',()=>{ sync(); render(); });
+    sync();
+    colorGetters[key]=()=>{ if(chk&&chk.checked) return 'transparent'; const v=txt.value.trim(); return validColor(v)?v:def; };
+  });
+
+  const num=(id,def,min=0)=>{ const v=parseFloat($(id).value); return isFinite(v)&&v>=min?v:def; };
+  const style=()=>document.querySelector('input[name=style]:checked').value;
+
+  function opts(){
+    return {
+      rows:Math.max(1,Math.round(num('rows',10,1))), cols:Math.max(1,Math.round(num('cols',10,1))),
+      cw:num('cw',40,1), ch:num('ch',40,1), cell:colorGetters.cellColor(),
+      lw:num('lw',2,0), line:colorGetters.lineColor(), style:style(),
+      dash:num('dashLen',10,1), dgap:num('dashGap',6,1), dot:num('dotGap',6,1), cross:num('crossLen',16,1),
+      gap:num('gap',0,0), pad:num('pad',10,0), bg:colorGetters.bgColor()
+    };
+  }
+
+  // Shared geometry: cell rectangles, line segments and intersections.
+  function geometry(o){
+    const inset=o.lw/2;
+    const gridW=o.cols*o.cw+(o.cols-1)*o.gap, gridH=o.rows*o.ch+(o.rows-1)*o.gap;
+    const W=Math.ceil(gridW+2*o.pad+o.lw), H=Math.ceil(gridH+2*o.pad+o.lw);
+    const ox=o.pad+inset, oy=o.pad+inset;
+    const cells=[], segs=[], pts=[];
+    for(let r=0;r<o.rows;r++) for(let c=0;c<o.cols;c++)
+      cells.push([ox+c*(o.cw+o.gap), oy+r*(o.ch+o.gap), o.cw, o.ch]);
+    if(o.gap===0){
+      for(let c=0;c<=o.cols;c++){ const x=ox+c*o.cw; segs.push([x,oy,x,oy+gridH]); }
+      for(let r=0;r<=o.rows;r++){ const y=oy+r*o.ch; segs.push([ox,y,ox+gridW,y]); }
+      for(let r=0;r<=o.rows;r++) for(let c=0;c<=o.cols;c++) pts.push([ox+c*o.cw, oy+r*o.ch]);
+    } else {
+      for(const [x,y,w,h] of cells){
+        segs.push([x,y,x+w,y],[x+w,y,x+w,y+h],[x,y+h,x+w,y+h],[x,y,x,y+h]);
+        pts.push([x,y],[x+w,y],[x,y+h],[x+w,y+h]);
+      }
+    }
+    return {W,H,cells,segs,pts};
+  }
+
+  function draw(g,o,c){
+    c.clearRect(0,0,g.W,g.H);
+    if(!isTransparent(o.bg)){ c.fillStyle=o.bg; c.fillRect(0,0,g.W,g.H); }
+    if(!isTransparent(o.cell)){ c.fillStyle=o.cell; for(const r of g.cells) c.fillRect(...r); }
+    if(o.lw<=0 || isTransparent(o.line)) return;
+    c.strokeStyle=o.line; c.fillStyle=o.line; c.lineWidth=o.lw;
+    if(o.style==='points'){
+      const rad=Math.max(o.lw,0.75);
+      for(const [x,y] of g.pts){ c.beginPath(); c.arc(x,y,rad,0,Math.PI*2); c.fill(); }
+      return;
+    }
+    if(o.style==='cross'){
+      const h=o.cross/2; c.lineCap='butt'; c.setLineDash([]); c.beginPath();
+      for(const [x,y] of g.pts){ c.moveTo(x-h,y); c.lineTo(x+h,y); c.moveTo(x,y-h); c.lineTo(x,y+h); }
+      c.stroke(); return;
+    }
+    if(o.style==='dashed'){ c.setLineDash([o.dash,o.dgap]); c.lineCap='butt'; }
+    else if(o.style==='dotted'){ c.setLineDash([0,o.dot+o.lw]); c.lineCap='round'; }
+    else { c.setLineDash([]); c.lineCap='square'; }
+    for(const [x1,y1,x2,y2] of g.segs){ c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); }
+    c.setLineDash([]);
+  }
+
+  function setStatus(msg,kind){ const s=$('status'); s.textContent=msg||''; s.className=kind||''; }
+
+  let raf=0;
+  function render(){
+    cancelAnimationFrame(raf);
+    raf=requestAnimationFrame(()=>{
+      const o=opts(), g=geometry(o);
+      document.querySelectorAll('.extra').forEach(el=>{ el.hidden = el.dataset.for!==o.style; });
+      if(g.W>MAX_SIDE||g.H>MAX_SIDE){ setStatus(`That would be a ${g.W}×${g.H} px image. Reduce the columns, rows or cell size (max ${MAX_SIDE} px per side).`,'err'); return; }
+      cv.width=g.W; cv.height=g.H; draw(g,o,ctx);
+      $('dims').textContent=`${g.W} × ${g.H} px · ${o.cols}×${o.rows} cells`;
+      if($('status').className==='err') setStatus('');
+    });
+  }
+
+  document.querySelectorAll('.controls input[type=number], input[name=style]').forEach(i=>{
+    i.addEventListener('input',render); i.addEventListener('change',render);
+  });
+
+  const blob=()=>new Promise(res=>cv.toBlob(res,'image/png'));
+  const fname=()=>{ const o=opts(); return `grid-${o.cols}x${o.rows}.png`; };
+
+  $('bSave').addEventListener('click', async ()=>{
+    const b=await blob();
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b); a.download=fname();
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    setStatus('Done! Your PNG has been downloaded.','ok');
+  });
+
+  $('bCopy').addEventListener('click', ()=>{
+    const fail=()=>setStatus('Your browser won’t let this page copy images. Try right-clicking the preview → “Copy image”.','err');
+    try{
+      const item=new ClipboardItem({'image/png':blob()});
+      navigator.clipboard.write([item]).then(()=>setStatus('Image copied. Paste it anywhere you like.','ok'),fail);
+    }catch(e){ fail(); }
+  });
+
+  $('bCopyB64').addEventListener('click', ()=>{
+    const url=cv.toDataURL('image/png');
+    navigator.clipboard.writeText(url).then(()=>setStatus(`Base64 copied as a data URL (${Math.round(url.length/1024)} KB).`,'ok'),
+      ()=>setStatus('Couldn’t copy the Base64 text.','err'));
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
